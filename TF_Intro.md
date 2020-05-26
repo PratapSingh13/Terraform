@@ -44,3 +44,18 @@ The general synatax for a Terraform resource is:
  Now that if you have the provider code downloaded, run the ```terraform plan``` command.
  
  ![alt text](images/2.png "Title Text")
+
+The ```plan``` command lets you see what Terraform will do before actually doing it.
+```(+)``` are going to created 
+```(-)``` are going to delete something
+```(~)``` are going to modified in-place.
+
+To actually create instance, run the ```terraform apply``` command
+
+ ![alt text](images/3.png "Title Text")
+ 
+ Type ***yes*** and hit enter to deploy EC2 instance.
+ 
+  ![alt text](images/4.png "Title Text")
+  
+ You SET THE BAR! you have deployed a server with Terraform.
