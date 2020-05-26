@@ -18,7 +18,7 @@ Add the following code to your ```main.tf```, which uses the ***aws_instance_res
       instance_type = "t2.micro"
       
       tags = {
-        Name = "terraform-example"
+        Name = "terraform-instance"
       }
     }
     
