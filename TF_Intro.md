@@ -34,9 +34,13 @@ The general synatax for a Terraform resource is:
  
  Now in the terminal, go into the folder where is you created ```main.tf``` and run the command ```terraform init```
  
+ ![alt text](images/1.png "Title Text")
+ 
  ### But why ```terraform init``` ###
  The ```terraform``` binary contains the basic functionality for Terraform, but it does not come with the code for any of the providers (e.g. AWS, Azure, GCP etc), so when first starting to use Terraform, you need to run ```terraform init``` to tell Terraform to scan the code, figure our the what providers you're using, and download the code for them.
  By default the provider code will be downloaded into a ```.terraform``` folder.
  Be aware that you need to to run ```init``` any ttime you start with new Terraform code, and no woory it is safe to run multiple times (the command is idempotent).
  
  Now that if you have the provider code downloaded, run the ```terraform plan``` command.
+ 
+ ![alt text](images/2.png "Title Text")
