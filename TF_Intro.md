@@ -19,7 +19,7 @@ Add the following code to your ```main.tf```, which uses the ***aws_instance_res
       
       tags = {
         Name = "terraform-example"
-  }
+      }
     }
     
 The general synatax for a Terraform resource is:
