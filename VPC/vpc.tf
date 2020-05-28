@@ -17,8 +17,8 @@ resource "aws_vpc" "My_VPC" {
 }
 
 # Create Subnet
-resource "aws" "My_VPC_Subnet" {
-    vpc_id                  = aws_vpc.My_VPC.id
+resource "aws_subnet" "My_VPC_Subnet" {
+    vpc_id                  = "${aws_vpc.My_VPC.id}"
     cidr_block              = "${var.subnetCIDRBlock}"
     map_public_ip_on_launch = "${var.mapPublicIP}"
     availability_zone       = "${var.availabilityZone}"
@@ -30,13 +30,13 @@ resource "aws" "My_VPC_Subnet" {
 
 # Create the Security Group
 resource "aws_security_group" "My_VPC_Security_Group" {
-    vpc_id = aws_vpc.My_VPC.id
-    name   = "My VPC Security Group"
+    vpc_id      = "${aws_vpc.My_VPC.id}"
+    name        = "My VPC Security Group"
     description = "My VPC Security Group"
 
     # Allow Ingress of port 22
     ingress {
-        cidr_blocks = var.ingressCIDRBlock
+        cidr_blocks = "${var.ingressCIDRBlock}"
         from_port   = 22
         to_port     = 22
         protocol    = "tcp"
@@ -51,15 +51,15 @@ resource "aws_security_group" "My_VPC_Security_Group" {
     }
 
     tags = {
-        Name = "My VPC Security Group"
+        Name        = "My VPC Security Group"
         description = "My VPC Security Group"
     }
 }
 
 # Create VPC NACL
 resource "aws_network_acl" "My_VPC_Security_ACL" {
-    vpc_id = aws_vpc.My_VPC.id
-    subnet_ids = [ aws_subnet.My_VPC_Subnet.id ]
+    vpc_id     = "${aws_vpc.My_VPC.id}"
+    subnet_ids = "${aws_subnet.My_VPC_Subnet.id}"
 
     # Allow Ingress port 22
     ingress {
@@ -108,7 +108,7 @@ resource "aws_network_acl" "My_VPC_Security_ACL" {
 
 # Create Internet Gateway
 resource "aws_internet_gateway" "My_VPC_IGW" {
-    vpc_id = aws_vpc.My_VPC.id
+    vpc_id = "${aws_vpc.My_VPC.id}"
     tags = {
         Name = "My VPC IGW"
     }
@@ -116,7 +116,7 @@ resource "aws_internet_gateway" "My_VPC_IGW" {
 
 # Create Route Table
 resource "aws_route_table" "My_VPC_route_table" {
-    vpc_id = aws_vpc.My_VPC.id
+    vpc_id = "${aws_vpc.My_VPC.id}"
     tags = {
         Name = "My VPC Route Table"
     }
@@ -124,13 +124,16 @@ resource "aws_route_table" "My_VPC_route_table" {
 
 # Create Internet Access
 resource "aws_route" "My_VPC_internet_access" {
-    route_table_id         = aws_route_table.My_VPC_route_table.id
+    route_table_id         = "${aws_route_table.My_VPC_route_table.id}"
     destination_cidr_block = "${var.destinationCIDRBlock}"
-    gateway_id             = aws_internet_gateway.My_VPC_IGW.id
+    gateway_id             = "${aws_internet_gateway.My_VPC_IGW.id}"
 }
 
 # Associate the Route Table with the Subnet
 resource "aws_route_table_association" "My_VPC_association" {
-    subnet_id      = aws_subnet.My_VPC_Subnet.id
-    route_table_id = aws_route_table.My_VPC_route_table.id
+    subnet_id      = "${aws_subnet.My_VPC_Subnet.id}"
+    route_table_id = "${aws_route_table.My_VPC_route_table.id}"
 }
+
+
+
