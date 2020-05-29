@@ -62,4 +62,4 @@ To actually create instance, run the ```terraform apply``` command
  
   ![alt text](images/4.png "Title Text")
   
- You SET THE BAR! you have deployed a server with Terraform.
+ You **SET THE BAR!** you have deployed a server with Terraform.
