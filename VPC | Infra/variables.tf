@@ -40,7 +40,7 @@ variable "destinationCIDRBlock" {
 }
 
 variable "ingressCIDRBlock" {
-  type = "list"
+  type = list
   default = [ "0.0.0.0/0" ]
 }
 variable "engressCIDRBlock" {
