@@ -291,7 +291,9 @@ variable "scalingDecrease" {
     default = -1
 }
 
-/*# Variables for CloudWatch metric alarm
+
+
+# Variables for CloudWatch metric alarm
 variable "metricName" {
     type    = string
     default = "CPUUtilization"
@@ -307,9 +309,13 @@ variable "stats" {
     default = "Average"
 }
 
-variable "Threshold" {
+variable "Threshold_up" {
+    type    = number
+    default = 80
+}
+
+variable "Threshold_down" {
     type    = number
     default = 70
 }
-*/
 
