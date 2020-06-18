@@ -48,4 +48,26 @@ output "ELB-IP" {
     value = aws_elb.ELB.dns_name
 }
 
+output "Launch_Configuration-ID" {
+    value = aws_launch_configuration.LaunchConfig.id
+}
 
+output "ASG-ID" {
+    value = aws_autoscaling_group.ASG.id
+}
+
+output "AS-Policy-Up" {
+    value = aws_autoscaling_policy.asg_policy_up.id
+}
+
+output "AS-Policy-Down" {
+    value = aws_autoscaling_policy.asg_policy_down.id
+}
+
+output "CloudWatch-Alarm_Up-ID" {
+    value = aws_cloudwatch_metric_alarm.asg_cpu_alarm_up.id
+}
+
+output "CloudWatch-Alarm_Down-ID" {
+    value = aws_cloudwatch_metric_alarm.asg_cpu_alarm_down.id
+}
