@@ -164,7 +164,7 @@ resource "aws_security_group" "My_Security_Group" {
   from_port   = var.ingressSSHfromPort
   to_port     = var.ingressSSHtoPort
   protocol    = var.protocol
-}
+ }
 
 # All OutBound access
   egress {
@@ -175,29 +175,16 @@ resource "aws_security_group" "My_Security_Group" {
  }
 }
 
-# Creating Launch Configuration for Auto-Scaling
 resource "aws_launch_configuration" "LaunchConfig" {
-  name_prefix     = "LC"
+  name_prefix                 = "L_cfg"
+  image_id                    = var.image
+  instance_type               = var.instance_type
+  key_name                    = var.key
 
-  image_id        = var.image
-  instance_type   = var.instance_type
-  key_name        = var.key
-
-  security_groups = [aws_security_group.My_Security_Group.id]
+  security_groups             = [aws_security_group.My_Security_Group.id]
   associate_public_ip_address = var.publicIPAssociaton
 
-  /*user_data = <<USER_DATA
-  #!/bin/bash
-  sudo apt-get update
-  sudo apt-get install -y nginx
-  sudo systemctl start nginx
-  sudo systemctl enable nginx
-  USER_DATA*/
-
-  user_data = <<USER_DATA
-  #!/bin/bash
-  touch /tmp/file.txt
-  USER_DATA
+  user_data = file("nginxConf.sh")
 
   lifecycle {
     create_before_destroy = true
@@ -268,7 +255,7 @@ resource "aws_autoscaling_group" "ASG" {
     aws_subnet.Public-Subnet-1.id,
     aws_subnet.Public-Subnet-2.id
   ]
-  
+
   depends_on = [aws_elb.ELB, aws_subnet.Public-Subnet-1, aws_subnet.Public-Subnet-2]
  
   lifecycle {
@@ -291,8 +278,25 @@ resource "aws_autoscaling_policy" "asg_policy_up" {
   depends_on             = [aws_autoscaling_group.ASG]
 }
 
+resource "aws_cloudwatch_metric_alarm" "asg_cpu_alarm_up" {
+  alarm_name          = "cpu_alarm_up"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = var.metricName
+  namespace           = "AWS/EC2"
+  period              = var.period
+  statistic           = var.stats
+  threshold           = var.Threshold_up
+
+  alarm_actions = [aws_autoscaling_policy.asg_policy_up.arn]
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.ASG.name
+  }
+}
+
 resource "aws_autoscaling_policy" "asg_policy_down" {
-  name = "asg-policy-down"
+  name                   = "asg-policy-down"
   scaling_adjustment     = var.scalingDecrease
   adjustment_type        = var.adjustmentType
   cooldown               = var.cooldown
@@ -300,21 +304,85 @@ resource "aws_autoscaling_policy" "asg_policy_down" {
   depends_on             = [aws_autoscaling_group.ASG]
 }
 
-/*resource "aws_cloudwatch_metric_alarm" "web_cpu_alarm_up" {
-  alarm_name          = "web_cpu_alarm_up"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
+resource "aws_cloudwatch_metric_alarm" "asg_cpu_alarm_down" {
+  alarm_name          = "cpu_alarm_down"
+  comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = var.metricName
   namespace           = "AWS/EC2"
   period              = var.period
   statistic           = var.stats
-  threshold           = var.Threshold
+  threshold           = var.Threshold_down
 
-  dimensions {
-    autoscaling_group_name = aws_autoscaling_group.web.name
+  alarm_actions = [aws_autoscaling_policy.asg_policy_down.arn]
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.ASG.name
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+data "template_file" "user_data_hw" {
+  template = <<USER_DATA
+  #!/bin/bash -xe
+  mkdir /tmp/test
+  sudo apt-get update
+	sudo apt-get install -y nginx
+	sudo systemctl start nginx
+	sudo systemctl enable nginx
+  sudo echo "<h1>Hey Yogendra</h1>" | sudo tee /var/www/html/index.html
+  USER_DATA
+}
+
+resource "aws_launch_template" "hello-temp" {
+  name = "hello-template"
+  disable_api_termination = true
+
+  image_id                    = var.image
+  instance_type               = var.instance_type
+  key_name                    = var.key
+ #user_data       = data.template_file.test.rendered
+
+  #security_groups             = [aws_security_group.My_Security_Group.id]
+
+  user_data = base64encode(data.template_file.user_data_hw.rendered)
+}
+
+launch_template = {
+    id      = aws_launch_template.hello-temp.id
+    version = 2.0
   }
 
-  alarm_description = "This metric monitor EC2 instance CPU utilization"
-  alarm_actions     = [aws_autoscaling_policy.web_policy_up.arn]
-}
 */
